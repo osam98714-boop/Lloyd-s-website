@@ -1,0 +1,16 @@
+<svg width="512" height="512" viewBox="0 0 512 512" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <!-- خلفية داكنة متطابقة مع موقعك -->
+  <rect width="512" height="512" rx="100" fill="#04010e"/>
+  
+  <!-- الرمز 𖤍 بستايل النيون -->
+  <text x="50%" y="55%" dominant-baseline="middle" text-anchor="middle" font-size="250" font-family="Arial" fill="#9d6fff" filter="drop-shadow(0 0 20px #9d6fff)">𖤍</text>
+  
+  <!-- إطار دائري نيون -->
+  <circle cx="256" cy="256" r="200" stroke="url(#paint0_linear)" stroke-width="15"/>
+  <defs>
+    <linearGradient id="paint0_linear" x1="0" y1="0" x2="512" y2="512" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#9d6fff"/>
+      <stop offset="1" stop-color="#f472b6"/>
+    </linearGradient>
+  </defs>
+</svg>
