@@ -17,7 +17,7 @@ app.use(express.json());
 app.use(express.static(path.join(__dirname, 'public')));
 
 // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-// 🔑 نظام مفاتيح API (تم الإبقاء عليه كما طلبت)
+// 🔑 نظام مفاتيح API
 // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 const apiKeys = new Map();
 apiKeys.set('test-key-123', { user: 'test', limit: 100, used: 0 });
@@ -160,10 +160,18 @@ async function onSessionReady(socket, number) {
     } catch (err) { console.error('[Pairing] Error:', err.message); }
 }
 
+// تعديل دالة التحقق لتكون أكثر تفصيلاً
 app.get('/check-status', (req, res) => {
     const number = req.query.number?.replace(/\D/g, '');
     if (!number) return res.status(400).json({ error: 'Number required' });
-    res.json({ connected: readyZips.has(number) });
+    
+    const isReady = readyZips.has(number);
+    const isPending = sessions.has(number);
+    
+    res.json({ 
+        connected: isReady, 
+        pending: isPending 
+    });
 });
 
 app.get('/get-code', async (req, res) => {
@@ -219,4 +227,4 @@ app.get('/pairing', (_, res) => res.sendFile(path.join(__dirname, 'public', 'pai
 app.listen(PORT, () => {
     console.log(`\n🟢 Yoru Media Server running on port ${PORT}\n`);
 });
-  
+            
