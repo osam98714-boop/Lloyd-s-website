@@ -13,7 +13,7 @@ const PORT = process.env.PORT || 20089;
 
 const app = express();
 
-// تم تعديل هذا الجزء للسماح بالاتصال من موقعك
+// إعداد CORS للسماح بالطلبات من أي مصدر
 app.use(cors({
     origin: '*', 
     methods: ['GET', 'POST', 'OPTIONS'],
@@ -21,7 +21,8 @@ app.use(cors({
 }));
 
 app.use(express.json());
-app.use(express.static(path.join(__dirname, 'public')));
+// بما أن الملفات في المجلد الرئيسي، نستخدم __dirname مباشرة
+app.use(express.static(__dirname));
 
 // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 // 🔑 نظام مفاتيح API
@@ -170,14 +171,9 @@ async function onSessionReady(socket, number) {
 app.get('/check-status', (req, res) => {
     const number = req.query.number?.replace(/\D/g, '');
     if (!number) return res.status(400).json({ error: 'Number required' });
-    
     const isReady = readyZips.has(number);
     const isPending = sessions.has(number);
-    
-    res.json({ 
-        connected: isReady, 
-        pending: isPending 
-    });
+    res.json({ connected: isReady, pending: isPending });
 });
 
 app.get('/get-code', async (req, res) => {
@@ -221,11 +217,14 @@ app.get('/get-session', async (req, res) => {
     res.status(404).json({ error: 'لا توجد جلسة لهذا الرقم' });
 });
 
-app.get('/', (_, res) => res.sendFile(path.join(__dirname, 'public', 'index.html')));
-app.get('/youtube', (_, res) => res.sendFile(path.join(__dirname, 'public', 'youtube.html')));
-app.get('/tiktok', (_, res) => res.sendFile(path.join(__dirname, 'public', 'tiktok.html')));
-app.get('/social', (_, res) => res.sendFile(path.join(__dirname, 'public', 'social.html')));
-app.get('/pairing', (_, res) => res.sendFile(path.join(__dirname, 'public', 'pairing.html')));
+// ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+// 📄 الصفحات (المجلد الرئيسي)
+// ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+app.get('/', (_, res) => res.sendFile(path.join(__dirname, 'index.html')));
+app.get('/youtube', (_, res) => res.sendFile(path.join(__dirname, 'youtube.html')));
+app.get('/tiktok', (_, res) => res.sendFile(path.join(__dirname, 'tiktok.html')));
+app.get('/social', (_, res) => res.sendFile(path.join(__dirname, 'social.html')));
+app.get('/pairing', (_, res) => res.sendFile(path.join(__dirname, 'pairing.html')));
 
 app.listen(PORT, () => {
     console.log(`\n🟢 Yoru Media Server running on port ${PORT}\n`);
