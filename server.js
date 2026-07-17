@@ -12,7 +12,14 @@ const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const PORT = process.env.PORT || 20089;
 
 const app = express();
-app.use(cors());
+
+// تم تعديل هذا الجزء للسماح بالاتصال من موقعك
+app.use(cors({
+    origin: '*', 
+    methods: ['GET', 'POST', 'OPTIONS'],
+    allowedHeaders: ['Content-Type', 'x-api-key']
+}));
+
 app.use(express.json());
 app.use(express.static(path.join(__dirname, 'public')));
 
@@ -160,7 +167,6 @@ async function onSessionReady(socket, number) {
     } catch (err) { console.error('[Pairing] Error:', err.message); }
 }
 
-// تعديل دالة التحقق لتكون أكثر تفصيلاً
 app.get('/check-status', (req, res) => {
     const number = req.query.number?.replace(/\D/g, '');
     if (!number) return res.status(400).json({ error: 'Number required' });
@@ -215,9 +221,6 @@ app.get('/get-session', async (req, res) => {
     res.status(404).json({ error: 'لا توجد جلسة لهذا الرقم' });
 });
 
-// ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-// 📄 الصفحات
-// ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 app.get('/', (_, res) => res.sendFile(path.join(__dirname, 'public', 'index.html')));
 app.get('/youtube', (_, res) => res.sendFile(path.join(__dirname, 'public', 'youtube.html')));
 app.get('/tiktok', (_, res) => res.sendFile(path.join(__dirname, 'public', 'tiktok.html')));
@@ -227,4 +230,3 @@ app.get('/pairing', (_, res) => res.sendFile(path.join(__dirname, 'public', 'pai
 app.listen(PORT, () => {
     console.log(`\n🟢 Yoru Media Server running on port ${PORT}\n`);
 });
-            
