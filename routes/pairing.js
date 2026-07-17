@@ -1,5 +1,5 @@
 // routes/pairing.js
-// نظام الإقران (من server.js الأصلي)
+// نظام الإقران (محدث لدعم التحقق من الحالة)
 
 import fs from 'fs';
 import path from 'path';
@@ -79,6 +79,19 @@ export default function pairingRoutes(app) {
             res.json({ code });
         } catch (err) {
             res.status(500).json({ error: err.message });
+        }
+    });
+
+    // 🔍 التحقق من حالة الاتصال (مهم جداً للواجهة)
+    app.get('/check-status', async (req, res) => {
+        const number = req.query.number?.replace(/\D/g, '');
+        if (!number) return res.status(400).json({ error: 'number required' });
+
+        const entry = sessions.get(number);
+        if (entry && entry.status === 'connected') {
+            res.json({ connected: true });
+        } else {
+            res.json({ connected: false });
         }
     });
     
