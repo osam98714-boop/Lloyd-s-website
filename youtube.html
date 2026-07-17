@@ -2,118 +2,123 @@
 <html lang="ar" dir="rtl">
 <head>
     <meta charset="UTF-8">
-    <title>YouTube Downloader - Yoru</title>
+    <title>Yoru · YouTube Downloader</title>
+    <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;700&family=Cinzel+Decorative:wght@700&display=swap" rel="stylesheet">
     <style>
+        :root {
+            --bg: #04010e;
+            --card-bg: rgba(15, 8, 35, 0.8);
+            --neon: #2dd4bf;
+            --accent: #f472b6;
+            --text: #ede8ff;
+        }
         body {
-            background: #0a0a0a;
-            color: white;
+            background: var(--bg);
+            color: var(--text);
             font-family: 'Tajawal', sans-serif;
+            margin: 0;
             padding: 20px;
+            min-height: 100vh;
         }
-        .container {
-            max-width: 800px;
-            margin: auto;
+        .container { max-width: 800px; margin: auto; }
+        
+        .back-link {
+            display: inline-block;
+            margin-bottom: 20px;
+            color: var(--accent);
+            text-decoration: none;
+            font-size: 0.9rem;
         }
+
+        h1 {
+            font-family: 'Cinzel Decorative', cursive;
+            text-align: center;
+            background: linear-gradient(to right, var(--neon), var(--accent));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            margin-bottom: 30px;
+        }
+
         .search-box {
             display: flex;
             gap: 10px;
-            margin-bottom: 20px;
+            margin-bottom: 40px;
         }
         .search-input {
             flex: 1;
-            padding: 12px;
+            padding: 15px 20px;
             border-radius: 30px;
-            border: none;
-            background: #222;
+            border: 1px solid rgba(45, 212, 191, 0.2);
+            background: rgba(15, 8, 35, 0.5);
             color: white;
+            outline: none;
         }
         .search-btn {
-            padding: 12px 24px;
-            background: #ff0000;
+            padding: 0 30px;
+            background: linear-gradient(45deg, var(--neon), var(--accent));
             border: none;
             border-radius: 30px;
-            color: white;
+            color: var(--bg);
+            font-weight: bold;
             cursor: pointer;
         }
-        .results {
-            display: grid;
-            gap: 20px;
-        }
+
+        .results { display: grid; gap: 20px; }
         .video-card {
-            background: #1a1a1a;
-            border-radius: 12px;
+            background: var(--card-bg);
+            border: 1px solid rgba(45, 212, 191, 0.1);
+            border-radius: 20px;
             overflow: hidden;
+            transition: 0.3s;
         }
-        .video-thumb {
-            width: 100%;
-            aspect-ratio: 16/9;
-            object-fit: cover;
-        }
-        .video-info {
-            padding: 12px;
-        }
-        .video-title {
-            font-weight: bold;
-            margin-bottom: 5px;
-        }
-        .video-channel {
-            color: #aaa;
-            font-size: 12px;
-            margin-bottom: 10px;
-        }
-        .quality-btns {
-            display: flex;
-            gap: 8px;
-        }
+        .video-card:hover { border-color: var(--neon); transform: translateY(-5px); }
+        .video-thumb { width: 100%; aspect-ratio: 16/9; object-fit: cover; }
+        .video-info { padding: 15px; }
+        .video-title { font-weight: bold; margin-bottom: 5px; }
+        .video-channel { color: var(--neon); font-size: 12px; margin-bottom: 15px; }
+        
+        .quality-btns { display: flex; gap: 10px; }
         .q-btn {
             flex: 1;
-            padding: 8px;
-            background: #333;
-            border: none;
-            border-radius: 8px;
+            padding: 10px;
+            background: rgba(255,255,255,0.05);
+            border: 1px solid rgba(255,255,255,0.1);
+            border-radius: 10px;
             color: white;
             cursor: pointer;
+            transition: 0.3s;
         }
-        .q-btn.video { background: #e74c3c; }
-        .q-btn.audio { background: #2c3e50; }
-        .q-btn:disabled { opacity: 0.5; cursor: not-allowed; }
+        .q-btn:hover { background: var(--accent); color: var(--bg); }
+        
         .toast {
-            position: fixed;
-            bottom: 20px;
-            left: 20px;
-            right: 20px;
-            background: #222;
-            padding: 12px;
-            border-radius: 10px;
-            text-align: center;
-            display: none;
-            z-index: 1000;
+            position: fixed; bottom: 20px; left: 20px; right: 20px;
+            background: var(--card-bg); border: 1px solid var(--accent);
+            padding: 15px; border-radius: 15px; text-align: center; display: none;
         }
-        .error { background: #c0392b; }
-        .success { background: #27ae60; }
     </style>
 </head>
 <body>
 <div class="container">
+    <a href="https://osam98714-boop.github.io/Lloyd-s-website/" class="back-link">← العودة للرئيسية</a>
     <h1>📺 YouTube Downloader</h1>
+    
     <div class="search-box">
         <input type="text" id="searchInput" class="search-input" placeholder="ابحث عن فيديو...">
         <button id="searchBtn" class="search-btn">بحث</button>
     </div>
+    
     <div id="results" class="results"></div>
 </div>
 <div id="toast" class="toast"></div>
 
 <script>
     const API_KEY = localStorage.getItem('api_key') || 'test-key-123';
-    let activeDownloads = {}; // لتتبع التحميلات النشطة
-
+    
     function showToast(msg, type = '') {
         const toast = document.getElementById('toast');
         toast.textContent = msg;
-        toast.className = 'toast ' + type;
         toast.style.display = 'block';
-        setTimeout(() => toast.style.display = 'none', 5000);
+        setTimeout(() => toast.style.display = 'none', 3000);
     }
 
     async function search() {
@@ -125,85 +130,45 @@
                 headers: { 'x-api-key': API_KEY }
             });
             const data = await res.json();
-            if (!data.success || !data.videos?.length) throw new Error(data.error || 'لا توجد نتائج');
+            if (!data.success || !data.videos?.length) throw new Error('لا توجد نتائج');
             renderResults(data.videos);
-        } catch (err) {
-            console.error(err);
-            showToast('❌ ' + err.message, 'error');
-        }
+        } catch (err) { showToast('❌ ' + err.message); }
     }
 
     function renderResults(videos) {
         const container = document.getElementById('results');
         container.innerHTML = '';
         videos.forEach(v => {
-            const card = document.createElement('div');
-            card.className = 'video-card';
-            card.innerHTML = `
-                <img class="video-thumb" src="${v.thumbnail}" onerror="this.src='https://img.youtube.com/vi/${v.id}/mqdefault.jpg'">
-                <div class="video-info">
-                    <div class="video-title">${escapeHtml(v.title)}</div>
-                    <div class="video-channel">📺 ${escapeHtml(v.channel)}</div>
-                    <div class="quality-btns">
-                        <button class="q-btn video" data-id="${v.id}" data-quality="720">🎬 720p</button>
-                        <button class="q-btn video" data-id="${v.id}" data-quality="360">🎬 360p</button>
-                        <button class="q-btn audio" data-id="${v.id}" data-quality="mp3">🎵 MP3</button>
+            container.innerHTML += `
+                <div class="video-card">
+                    <img class="video-thumb" src="${v.thumbnail}">
+                    <div class="video-info">
+                        <div class="video-title">${v.title.substring(0, 50)}...</div>
+                        <div class="video-channel">📺 ${v.channel}</div>
+                        <div class="quality-btns">
+                            <button class="q-btn" onclick="dl('${v.id}', '720')">720p</button>
+                            <button class="q-btn" onclick="dl('${v.id}', '360')">360p</button>
+                            <button class="q-btn" onclick="dl('${v.id}', 'mp3')">MP3</button>
+                        </div>
                     </div>
                 </div>
             `;
-            container.appendChild(card);
-        });
-        // إضافة مستمعي الأزرار
-        document.querySelectorAll('.q-btn').forEach(btn => {
-            btn.addEventListener('click', async (e) => {
-                const id = btn.dataset.id;
-                const quality = btn.dataset.quality;
-                await downloadVideo(id, quality, btn);
-            });
         });
     }
 
-    async function downloadVideo(videoId, quality, btn) {
-        const url = `https://www.youtube.com/watch?v=${videoId}`;
-        const originalText = btn.innerText;
-        btn.disabled = true;
-        btn.innerText = '⏳ جاري...';
-        showToast(`⏳ بدء التحميل (${quality === 'mp3' ? 'صوت' : 'فيديو ' + quality})...`);
-
+    async function dl(id, format) {
+        showToast('⏳ جاري تحضير الرابط...');
         try {
-            // 1. طلب رابط التحميل من السيرفر
-            const res = await fetch(`/api/youtube/download?url=${encodeURIComponent(url)}&format=${quality}`, {
+            const res = await fetch(`/api/youtube/download?url=https://www.youtube.com/watch?v=${id}&format=${format}`, {
                 headers: { 'x-api-key': API_KEY }
             });
             const data = await res.json();
-            if (!data.success || !data.downloadUrl) throw new Error(data.error || 'لم يتم استلام رابط التحميل');
-
-            // 2. فتح رابط التحميل مباشرة (أسرع وأسهل)
-            window.open(data.downloadUrl, '_blank');
-            showToast(`✅ بدأ التحميل!`, 'success');
-            btn.innerText = '✅ تم';
-
-        } catch (err) {
-            console.error('Download error:', err);
-            showToast(`❌ فشل التحميل: ${err.message}`, 'error');
-            btn.innerText = originalText;
-        } finally {
-            setTimeout(() => { btn.disabled = false; }, 3000);
-        }
+            if (data.downloadUrl) window.open(data.downloadUrl, '_blank');
+            else throw new Error('فشل الحصول على الرابط');
+        } catch (e) { showToast('❌ فشل: ' + e.message); }
     }
 
-    function escapeHtml(str) {
-        if (!str) return '';
-        return str.replace(/[&<>]/g, function(m) {
-            if (m === '&') return '&amp;';
-            if (m === '<') return '&lt;';
-            if (m === '>') return '&gt;';
-            return m;
-        });
-    }
-
-    document.getElementById('searchBtn').addEventListener('click', search);
-    document.getElementById('searchInput').addEventListener('keypress', e => { if (e.key === 'Enter') search(); });
+    document.getElementById('searchBtn').onclick = search;
 </script>
 </body>
 </html>
